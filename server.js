@@ -69,9 +69,14 @@ app.get('/dashboard/:userId', (req, res) => {
     let userData = [];
     if (fs.existsSync(userFile)) {
         try {
-            userData = JSON.parse(fs.readFileSync(userFile, 'utf8'));
+            const fileContent = fs.readFileSync(userFile, 'utf8');
+            if (fileContent) {
+                const parsed = JSON.parse(fileContent);
+                userData = Array.isArray(parsed) ? parsed : [];
+            }
         } catch (e) {
-            console.error('Error reading dashboard data:', e);
+            console.error(`[ERROR] Dashboard data read failed for ${userId}:`, e);
+            userData = []; // Fail gracefully with empty data
         }
     }
 
