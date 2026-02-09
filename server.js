@@ -90,7 +90,21 @@ app.get('/dashboard/:userId', (req, res) => {
         }
     }
 
-    res.render('dashboard', { userId, data: userData, hostURL });
+    res.render('dashboard', { userId, data: userData, hostURL }, (err, html) => {
+        if (err) {
+            console.error(`[ERROR] Dashboard render failed for ${userId}:`, err);
+            return res.status(500).send(`
+                <div style="font-family: monospace; padding: 20px; background: #000; color: #ff0000; border: 1px solid #ff0000;">
+                    <h3>DASHBOARD RENDER ERROR</h3>
+                    <p>System encountered a critical error while generating interface.</p>
+                    <pre style="background: #111; padding: 10px; overflow: auto; color: #fff;">${err.message}</pre>
+                    <button onclick="location.reload()" style="padding: 10px 20px; margin-top: 20px; cursor: pointer;">RETRY SYNC</button>
+                    <a href="/" style="color: #fff; margin-left: 20px;">RETURN BASE</a>
+                </div>
+            `);
+        }
+        res.send(html);
+    });
 });
 
 app.get('/w/:path/:uri', (req, res) => {
@@ -263,6 +277,12 @@ app.post('/api/create-link', async (req, res) => {
 // Health check endpoint for Render
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Detailed Global Error Handler
+app.use((err, req, res, next) => {
+    console.error('[FATAL] Unhandled Exception:', err);
+    res.status(500).send('Internal Server Error: ' + (err.message || 'Unknown Error'));
 });
 
 app.listen(PORT, () => {
