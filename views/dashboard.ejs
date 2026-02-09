@@ -155,11 +155,9 @@
 
                                         <% } else if (entry.data.type==='info' ) { %>
                                             <div class="info-grid">
-                                                <% // Robust parsing that handles missing content if
-                                                    (entry.data.content) { const parts=entry.data.content.split('<br>');
+                                                <% if (entry.data.content) { const parts=entry.data.content.split('<br>
+                                                    ');
                                                     parts.forEach(part => {
-                                                    // Improved regex to capture key-value pairs more reliably
-                                                    // Matches "<b>Key:</b> Value" pattern
                                                     const match = part.match(/<b>(.+?):<\ /b>\s*(.*)/);
                                                             if (match) {
                                                             %>
